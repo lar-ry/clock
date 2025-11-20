@@ -38,12 +38,6 @@ const update = (item: StatusBarItem) => {
   } as Intl.DateTimeFormatOptions);
 
   item.tooltip = new MarkdownString(tips.join("\n"));
-  item.show();
-  item.command = {
-    command: "workbench.action.openSettings",
-    title: "openSettings",
-    arguments: ["@ext:larry-lan.clocks"],
-  };
 };
 
 export function createStatusBarClocks(context: ExtensionContext) {
@@ -52,6 +46,12 @@ export function createStatusBarClocks(context: ExtensionContext) {
     -Infinity
   );
 
+  statusBarItem.command = {
+    command: "workbench.action.openSettings",
+    title: "openSettings",
+    arguments: ["@ext:larry-lan.clocks"],
+  };
+  statusBarItem.show();
   const timer = setInterval(() => update(statusBarItem), 1000);
 
   context.subscriptions.push(statusBarItem);
