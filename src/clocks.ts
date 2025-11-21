@@ -31,15 +31,36 @@ const update = (item: StatusBarItem) => {
       return `- **${time} (${l10n.t("Local time")})**`;
     }
   });
-
   item.text = now.toLocaleString(config.language, {
     second: config.showSecond ? "2-digit" : undefined,
     ...baseOptions,
   } as Intl.DateTimeFormatOptions);
-
   item.tooltip = new MarkdownString(tips.join("\n"));
 };
-
+const startClock = (item: StatusBarItem, context: ExtensionContext) => {
+  let disposed = false;
+  const tick = () => {
+    if (disposed) {
+      return;
+    }
+    const config = workspace.getConfiguration("clocks");
+    const now = Date.now();
+    update(item);
+    let next;
+    if (config.showSecond) {
+      next = 1000 - (now % 1000);
+    } else {
+      next = 60000 - (now % 60000);
+    }
+    setTimeout(tick, next);
+  };
+  tick();
+  context.subscriptions.push({
+    dispose() {
+      disposed = true;
+    },
+  });
+};
 export function createStatusBarClocks(context: ExtensionContext) {
   const statusBarItem = window.createStatusBarItem(
     StatusBarAlignment.Right,
@@ -52,14 +73,9 @@ export function createStatusBarClocks(context: ExtensionContext) {
     arguments: ["@ext:larry-lan.clocks"],
   };
   statusBarItem.show();
-  const timer = setInterval(() => update(statusBarItem), 1000);
+  startClock(statusBarItem, context);
 
   context.subscriptions.push(statusBarItem);
-  context.subscriptions.push({
-    dispose() {
-      clearInterval(timer);
-    },
-  });
 
   return statusBarItem;
 }
