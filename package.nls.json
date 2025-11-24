@@ -1,4 +1,6 @@
 {
+    "alarms": "Alarms",
+    "alarms.errorMessage": "Must be HH:MM",
     "description": "Display clocks for different time zones in the status bar",
     "hour12": "12 hours",
     "language": "Language",

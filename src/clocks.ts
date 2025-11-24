@@ -4,34 +4,68 @@ import {
   window,
   StatusBarAlignment,
   MarkdownString,
-  l10n,
   StatusBarItem,
+  WorkspaceConfiguration,
+  l10n,
+  ThemeColor,
 } from "vscode";
 
-const update = (item: StatusBarItem) => {
-  const config = workspace.getConfiguration("clocks");
-  const now = new Date();
-  const baseOptions = {
+const getTimeLocaleString = ({
+  config,
+  time,
+  timeZone,
+  isText,
+}: {
+  config: WorkspaceConfiguration;
+  time: Date;
+  timeZone?: string;
+  isText?: boolean;
+}) => {
+  return time.toLocaleString(config.language, {
+    timeZone,
     hour: "2-digit",
     minute: "2-digit",
     hour12: config.hour12,
     weekday: config.weekday || undefined,
-  };
-  const tips = [undefined, ...config.worldClocks]?.map((x: string) => {
-    const time = now.toLocaleString(config.language, {
-      timeZone: x,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      ...baseOptions,
-    } as Intl.DateTimeFormatOptions);
-    return `${time} (${x ?? l10n.t("Local time")})`;
+    year: isText ? undefined : "numeric",
+    month: isText ? undefined : "2-digit",
+    day: isText ? undefined : "2-digit",
+    second: config.showSecond && isText ? "2-digit" : undefined,
   });
-  item.text = now.toLocaleString(config.language, {
-    second: config.showSecond ? "2-digit" : undefined,
-    ...baseOptions,
-  } as Intl.DateTimeFormatOptions);
-  item.tooltip = new MarkdownString(tips.join("  \n"));
+};
+
+const update = (item: StatusBarItem) => {
+  const config = workspace.getConfiguration("clocks");
+  const now = new Date();
+  const nowHourMinute = now.toLocaleString(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+  const localTimeTip =
+    getTimeLocaleString({ config, time: now }) + ` (${l10n.t("Local time")})`;
+  const worldClocksTips = config.worldClocks?.map(
+    (x: string) =>
+      getTimeLocaleString({ config, time: now, timeZone: x }) + ` (${x})`
+  );
+  const alarmsTips = Object.entries(config.alarms).map(([k, v]) => {
+    if (/^(?:[01][0-9]|2[0-3]):[0-5][0-9]$/.test(k)) {
+      return nowHourMinute === k ? `**${k} (${v})**` : `${k} (${v})`;
+    }
+    return `~~${k} (${v})~~`;
+  });
+
+  item.text = getTimeLocaleString({ config, time: now, isText: true });
+  item.tooltip = new MarkdownString(
+    localTimeTip +
+      "\n\n---\n\n" +
+      worldClocksTips.join("  \n") +
+      "\n\n---\n\n" +
+      alarmsTips.join("  \n")
+  );
+  item.backgroundColor = Object.keys(config.alarms)?.includes(nowHourMinute)
+    ? new ThemeColor("statusBarItem.warningBackground")
+    : undefined;
 };
 const startClock = (item: StatusBarItem, context: ExtensionContext) => {
   let disposed = false;
@@ -71,6 +105,13 @@ export function createStatusBarClocks(context: ExtensionContext) {
   statusBarItem.show();
   startClock(statusBarItem, context);
 
+  context.subscriptions.push(
+    workspace.onDidChangeConfiguration((e) => {
+      if (e.affectsConfiguration("clocks")) {
+        update(statusBarItem);
+      }
+    })
+  );
   context.subscriptions.push(statusBarItem);
 
   return statusBarItem;

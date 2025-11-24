@@ -1,4 +1,6 @@
 {
+    "alarms": "闹钟",
+    "alarms.errorMessage": "必须是 HH:MM",
     "description": "在状态栏显示不同时区的时钟",
     "hour12": "12 小时制",
     "language": "语言",
