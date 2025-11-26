@@ -5,7 +5,7 @@
   "repository": "https://github.com/lar-ry/clocks",
   "publisher": "larry-lan",
   "icon": "assets/logo.png",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "engines": {
     "vscode": "^1.78.0"
   },
@@ -34,6 +34,11 @@
           },
           "default": {}
         },
+        "clocks.showLunar": {
+          "type": "boolean",
+          "description": "%showLunar%",
+          "default": false
+        },
         "clocks.alarms.enable": {
           "type": "boolean",
           "description": "%alarms.enable%",
@@ -53,10 +58,10 @@
             null
           ],
           "enumItemLabels": [
-            "%long%",
-            "%short%",
-            "%narrow%",
-            "%null%"
+            "%clock.weekday.long%",
+            "%clock.weekday.short%",
+            "%clock.weekday.narrow%",
+            "%clock.weekday.null%"
           ],
           "description": "%clock.weekday%",
           "default": "short"
@@ -523,5 +528,8 @@
     "esbuild": "^0.27.0",
     "eslint": "^9.34.0",
     "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "lunar-typescript": "^1.8.6"
   }
 }

@@ -4,12 +4,13 @@
     "alarms.items.errorMessage": "Must be HH:MM",
     "clock.showSecond": "Show second",
     "clock.weekday": "Weekday",
+    "clock.weekday.long": "Long",
+    "clock.weekday.narrow": "Narrow",
+    "clock.weekday.null": "No display",
+    "clock.weekday.short": "Short",
     "description": "Display world clocks in the status bar and support alarms",
     "enable": "Enable",
     "hour12": "12 hours",
-    "long": "Long",
-    "narrow": "Narrow",
-    "null": "No display",
-    "short": "Short",
+    "showLunar": "Show lunar",
     "worldClocks": "World clocks"
 }

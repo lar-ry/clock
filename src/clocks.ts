@@ -10,6 +10,7 @@ import {
   ThemeColor,
   env,
 } from "vscode";
+import { solarToLunar } from "./lunar";
 
 const getTimeLocaleString = ({
   config,
@@ -49,7 +50,9 @@ const update = (item: StatusBarItem) => {
     hour12: false,
   });
   const localTimeTip =
-    getTimeLocaleString({ config, time: now }) + ` (${l10n.t("Local time")})`;
+    getTimeLocaleString({ config, time: now }) +
+    ` (${l10n.t("Local time")})` +
+    `${config.showLunar ? `  \n${solarToLunar(now).toString()}` : ""}`;
   const worldClocksTips = config.worldClocks?.map(
     (x: string) =>
       getTimeLocaleString({ config, time: now, timeZone: x }) + ` (${x})`

@@ -4,12 +4,13 @@
     "alarms.items.errorMessage": "必须是 HH:MM",
     "clock.showSecond": "显示秒",
     "clock.weekday": "周格式",
+    "clock.weekday.long": "长",
+    "clock.weekday.narrow": "极简",
+    "clock.weekday.null": "不显示",
+    "clock.weekday.short": "短",
     "description": "在状态栏显示世界时钟并支持闹钟",
     "enable": "使能",
     "hour12": "12 小时制",
-    "long": "长",
-    "narrow": "极简",
-    "null": "不显示",
-    "short": "短",
+    "showLunar": "显示农历",
     "worldClocks": "世界时钟"
 }
